@@ -8,4 +8,5 @@ dist/
 .expo/
 *.tsbuildinfo
 .superpowers/
+.claude/
 coverage/
