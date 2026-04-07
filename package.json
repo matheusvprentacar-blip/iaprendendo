@@ -1,0 +1,24 @@
+{
+  "name": "ia-motor-adaptativo",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:api": "turbo dev --filter=@ia-motor/api",
+    "dev:ai": "cd services/ai-engine && uvicorn main:app --reload --port 8001",
+    "build": "turbo build",
+    "test": "turbo test",
+    "typecheck": "turbo typecheck",
+    "lint": "turbo lint",
+    "db:migrate": "cd services/api && pnpm prisma migrate dev",
+    "db:seed": "cd services/api && pnpm prisma db seed",
+    "db:embed": "cd services/ai-engine && python -m scripts.generate_embeddings"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
