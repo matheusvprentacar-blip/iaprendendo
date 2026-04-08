@@ -14,11 +14,15 @@
     "db:embed": "cd services/ai-engine && python -m scripts.generate_embeddings"
   },
   "devDependencies": {
+    "pnpm": "^9.15.0",
     "turbo": "^2.0.0"
   },
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
   },
-  "packageManager": "pnpm@9.0.0"
+  "packageManager": "pnpm@9.0.0",
+  "dependencies": {
+    "ripgrep-node": "^1.0.0"
+  }
 }
