@@ -1,0 +1,23 @@
+{
+  "name": "@ia-motor/types",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@ia-motor/config": "workspace:*",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}
