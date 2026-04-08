@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Student {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @db.VarChar(100)
+  birth_date DateTime? @db.Date
+  created_at DateTime  @default(now())
+
+  profile   StudentProfileModel?
+  missions  Mission[]
+  telemetry TelemetryEventModel[]
+  consents  ConsentRecord[]
+
+  @@map("students")
+}
+
+model StudentProfileModel {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student_id            String   @unique @db.Uuid
+  attention_level       Int      @db.SmallInt
+  sensory_sensitivity   Int      @db.SmallInt
+  executive_functions   Json
+  hyperfocos            String[]
+  aversions             String[]
+  current_support_level String   @default("neutro") @db.VarChar(20)
+  updated_at            DateTime @default(now()) @updatedAt
+
+  student Student @relation(fields: [student_id], references: [id], onDelete: Cascade)
+
+  @@map("student_profiles")
+}
+
+model SkillCard {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  skill_id       String   @unique @db.VarChar(50)
+  bncc_code      String   @db.VarChar(30)
+  area           String?  @db.VarChar(50)
+  grade_year     String?  @db.VarChar(20)
+  objective      String
+  support_matrix Json
+
+  missions   Mission[]
+  embeddings CurriculumEmbedding[]
+
+  @@index([bncc_code])
+  @@map("skill_cards")
+}
+
+model Mission {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student_id    String    @db.Uuid
+  skill_card_id String    @db.Uuid
+  support_level String    @db.VarChar(20)
+  skin_theme    String?   @db.VarChar(50)
+  status        String    @default("pending") @db.VarChar(20)
+  started_at    DateTime?
+  completed_at  DateTime?
+
+  student    Student              @relation(fields: [student_id], references: [id])
+  skill_card SkillCard            @relation(fields: [skill_card_id], references: [id])
+  telemetry  TelemetryEventModel[]
+
+  @@index([student_id, status])
+  @@map("missions")
+}
+
+model TelemetryEventModel {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mission_id  String   @db.Uuid
+  student_id  String   @db.Uuid
+  event_type  String   @db.VarChar(50)
+  value       Float?
+  metadata    Json?
+  recorded_at DateTime @default(now())
+
+  mission Mission @relation(fields: [mission_id], references: [id])
+  student Student @relation(fields: [student_id], references: [id])
+
+  @@index([student_id, recorded_at(sort: Desc)])
+  @@map("telemetry_events")
+}
+
+model CurriculumEmbedding {
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  skill_card_id String  @db.Uuid
+  content       String?
+
+  skill_card SkillCard @relation(fields: [skill_card_id], references: [id])
+
+  @@map("curriculum_embeddings")
+}
+
+model ConsentRecord {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student_id String    @db.Uuid
+  parent_id  String    @db.Uuid
+  scope      String[]
+  granted_at DateTime  @default(now())
+  revoked_at DateTime?
+
+  student Student @relation(fields: [student_id], references: [id])
+
+  @@map("consent_records")
+}
